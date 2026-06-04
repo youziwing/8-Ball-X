@@ -1,9 +1,10 @@
 local ws = game:GetService("Workspace")
 local rs = game:GetService("RunService")
+local Players = game:GetService("Players")
 
 local CFG = {
     mainExtend = 400,
-    deflectExtend = 400,
+    deflectExtend = 800,
     pulseSpeed = 3, pulseMin = 0.2, pulseMax = 0.5,
 
     main = {
@@ -19,6 +20,18 @@ local CFG = {
 }
 
 local state = { pulsePhase = 0 }
+
+UI.AddTab("Trajectory", function(tab)
+    local sec = tab:Section("Settings", "Left")
+    
+    sec:SliderFloat("mainLen", "Main Length", 0, 2000, CFG.mainExtend, "%.0f", function(v)
+        CFG.mainExtend = v
+    end)
+    
+    sec:SliderFloat("deflectLen", "Deflect Length", 0, 2000, CFG.deflectExtend, "%.0f", function(v)
+        CFG.deflectExtend = v
+    end)
+end)
 
 local function newLine(props)
     local d = Drawing.new("Line")
