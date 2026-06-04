@@ -2,7 +2,8 @@ local ws = game:GetService("Workspace")
 local rs = game:GetService("RunService")
 
 local CFG = {
-    extend = 400,
+    mainExtend = 400,
+    deflectExtend = 800,
     pulseSpeed = 3, pulseMin = 0.2, pulseMax = 0.5,
 
     main = {
@@ -19,7 +20,6 @@ local CFG = {
 
 local state = { pulsePhase = 0 }
 
--- Drawing helpers
 local function newLine(props)
     local d = Drawing.new("Line")
     for k, v in pairs(props) do d[k] = v end
@@ -39,7 +39,6 @@ end
 
 local draw = { main = makeSet(CFG.main), deflect = makeSet(CFG.deflect) }
 
--- Utils
 local function lerp(a, b, t) return a + (b - a) * t end
 local function round(v) return Vector2.new(math.floor(v.X + 0.5), math.floor(v.Y + 0.5)) end
 
@@ -90,7 +89,6 @@ local function updateTip(tipLines, ext, alpha, size)
     end
 end
 
--- Visibility
 local function hide(set)
     set.line.Visible = false
     set.glow1.Visible = false
@@ -113,7 +111,6 @@ local function show(set, ext, glowAlpha, pulse)
     updateTip(set.tip, ext, lerp(0.4, 1.0, pulse), set.tipSize)
 end
 
--- Cleanup
 local function cleanup()
     for _, set in pairs(draw) do
         for _, d in pairs({ set.line, set.glow1, set.glow2 }) do d:Remove() end
@@ -123,7 +120,6 @@ end
 
 _G._trajCleanup = cleanup
 
--- Render loop
 rs.RenderStepped:Connect(function(dt)
     state.pulsePhase = state.pulsePhase + dt * CFG.pulseSpeed
     local pulse = (math.sin(state.pulsePhase) + 1) / 2
@@ -140,7 +136,7 @@ rs.RenderStepped:Connect(function(dt)
     if not hit then
         hide(draw.main)
     else
-        local ext = calcExtended(getLineData(hit), CFG.extend)
+        local ext = calcExtended(getLineData(hit), CFG.mainExtend)
         if not ext then hide(draw.main) else show(draw.main, ext, glowAlpha, pulse) end
     end
 
@@ -148,7 +144,7 @@ rs.RenderStepped:Connect(function(dt)
     if not deflect then
         hide(draw.deflect)
     else
-        local ext = calcExtended(getLineData(deflect), CFG.extend)
+        local ext = calcExtended(getLineData(deflect), CFG.deflectExtend)
         if not ext then hide(draw.deflect) else show(draw.deflect, ext, glowAlpha, pulse) end
     end
 end)
