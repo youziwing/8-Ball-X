@@ -3,7 +3,7 @@ local rs = game:GetService("RunService")
 
 local CFG = {
     mainExtend = 400,
-    deflectExtend = 800,
+    deflectExtend = 400,
     pulseSpeed = 3, pulseMin = 0.2, pulseMax = 0.5,
 
     main = {
